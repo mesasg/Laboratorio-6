@@ -8,3 +8,4 @@ C:\Users\saram\OneDrive\Escritorio\Cosas Lógica\LABORATORIOS\Laboratorio 6\obj\
 C:\Users\saram\OneDrive\Escritorio\Cosas Lógica\LABORATORIOS\Laboratorio 6\obj\Debug\Laboratorio 6.csproj.CoreCompileInputs.cache
 C:\Users\saram\OneDrive\Escritorio\Cosas Lógica\LABORATORIOS\Laboratorio 6\obj\Debug\Laboratorio 6.exe
 C:\Users\saram\OneDrive\Escritorio\Cosas Lógica\LABORATORIOS\Laboratorio 6\obj\Debug\Laboratorio 6.pdb
+C:\Users\saram\OneDrive\Escritorio\Cosas Lógica\LABORATORIOS\Laboratorio 6\obj\Debug\Laboratorio_6.Form2.resources

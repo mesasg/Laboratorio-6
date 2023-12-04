@@ -10,10 +10,12 @@ using System.Windows.Forms;
 
 namespace Laboratorio_6
 {
+    /// <summary>
+    /// Clase que ejecuta el juego
+    /// </summary>
     public partial class Form1 : Form
     {
         private Tablero nuevoTablero;
-        public Button[,] tablero;
         private Button piezaSeleccionada;
         private Button nuevaPosicion;
         public string blancas;
@@ -21,6 +23,8 @@ namespace Laboratorio_6
         public int movB = 0;
         public int movN = 0;
         public string ultimoTurno;
+        int puntajeFinalB;
+        int puntajeFinalN;
 
         /// <summary>
         /// Se llama al abrir el formulario
@@ -36,9 +40,7 @@ namespace Laboratorio_6
         /// </summary>
         public void construirTablero()
         {
-            tablero = new Button[8, 8];
             nuevoTablero = new Tablero();
-            nuevoTablero.posicionesTablero();
 
             int coordY = 3;
             for (int i = 0; i < 8; i++)
@@ -64,6 +66,7 @@ namespace Laboratorio_6
                     cuadro.MouseUp += cuadro_MouseUp;
 
                     panel1.Controls.Add(cuadro);
+                    
                     coordX += 70;
                 }
                 coordY += 70;
@@ -162,8 +165,8 @@ namespace Laboratorio_6
                         }
                         ultimoTurno = "b";
                         movB++;
-                        label4.Text = nuevoTablero.puntosBlancas.ToString();
-                        label3.Text = nuevoTablero.puntosNegras.ToString();
+                        puntosBlanca.Text = nuevoTablero.puntosBlancas.ToString();
+                        puntosNegras.Text = nuevoTablero.puntosNegras.ToString();
 
                     }
                     else
@@ -197,13 +200,13 @@ namespace Laboratorio_6
                                 nuevoTablero.movimientoCaballo(piezaSeleccionada, nuevaPosicion);
                                 break;
                             case "A":
-
+                                nuevoTablero.movimientoAlfil(piezaSeleccionada, nuevaPosicion);
                                 break;
                             case "T":
                                 nuevoTablero.movimientoTorre(piezaSeleccionada, nuevaPosicion);
                                 break;
                             case "Q":
-
+                                nuevoTablero.movimientoReina(piezaSeleccionada, nuevaPosicion);
                                 break;
                             case "R":
                                 nuevoTablero.movimientoRey(piezaSeleccionada, nuevaPosicion);
@@ -213,8 +216,8 @@ namespace Laboratorio_6
                         }
 
                         ultimoTurno = color;
-                        label4.Text = nuevoTablero.puntosBlancas.ToString();
-                        label3.Text = nuevoTablero.puntosNegras.ToString();
+                        puntosBlanca.Text = nuevoTablero.puntosBlancas.ToString();
+                        puntosNegras.Text = nuevoTablero.puntosNegras.ToString();
                     }
                     else
                     {
@@ -227,6 +230,7 @@ namespace Laboratorio_6
                 nuevaPosicion = null;
             }
         }
+
 
         /// <summary>
         /// Inicia el juego
@@ -244,9 +248,64 @@ namespace Laboratorio_6
             txtNegras.Visible = false;
             panelPuntos.Visible = true;
             button1.Visible = true;
+            button2.Visible = false;
             construirTablero();
         }
 
-       
+        /// <summary>
+        /// Termina el juego y guarda la informacion del ganador
+        /// </summary>
+        public void terminarJuego()
+        {
+            int.TryParse(puntosBlanca.Text, out puntajeFinalB);
+            int.TryParse(puntosNegras.Text, out puntajeFinalN);
+            
+
+            int puntajeGanador;
+            string ganador;
+            DateTime fecha = DateTime.Now;
+
+            Jugadores jugadores= Jugadores.guardarConstructor();
+
+            if (puntajeFinalN > puntajeFinalB)
+            {
+                puntajeGanador = puntajeFinalN;
+                ganador = negras;
+                jugadores.guardarObjetoJugador(ganador, puntajeGanador, fecha);
+            }
+            if (puntajeFinalB > puntajeFinalN)
+            {
+                puntajeGanador = puntajeFinalB;
+                ganador = blancas;
+                jugadores.guardarObjetoJugador(ganador, puntajeGanador, fecha);
+
+            }
+            if (puntajeFinalN == puntajeFinalB)
+            {
+                puntajeGanador = puntajeFinalN;
+                ganador = negras + " - " + blancas;
+                jugadores.guardarObjetoJugador(ganador, puntajeGanador, fecha);
+            }
+            panel1.Controls.Clear();
+            label1.Visible = true;
+            label2.Visible = true;
+            btnInciarJuego.Visible = true;
+            txtBlancas.Visible = true;
+            txtNegras.Visible = true;
+            panelPuntos.Visible = false;
+            button1.Visible = false;
+            button2.Visible = true;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            terminarJuego();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Form2 mejoresPuntajes = new Form2();
+            mejoresPuntajes.ShowDialog();
+        }
     }
 }

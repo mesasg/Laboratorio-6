@@ -12,6 +12,9 @@ using System.Windows.Forms.VisualStyles;
 
 namespace Laboratorio_6
 {
+    /// <summary>
+    /// Clase que contiene los metodos escenciales del juego
+    /// </summary>
     internal class Tablero
     {
         public Button[,] tablero;
@@ -25,6 +28,7 @@ namespace Laboratorio_6
         /// Getter y setter de la posicion de cada cuadro del tablero.
         /// </summary>
         public string[,] posiciones { get; set; }
+
         /// <summary>
         /// Constructor de la clase
         /// </summary>
@@ -38,22 +42,24 @@ namespace Laboratorio_6
         /// Devuelve el valor correspondiente a cada pieza
         /// </summary>
         /// <param name="piezaComida">Tipo de pieza comida</param>
-        /// <returns></returns>
+        /// <returns>Puntos que se deben sumar</returns>
         public int sumarPuntos(string piezaComida)
         {
+            Form1 form = new Form1();
             switch (piezaComida)
             {
-                case "C":
+                case "C": 
                     return 3;
-                case "Q":
+                case "Q": 
                     return 9;
-                case "A":
+                case "A": 
                     return 3;
-                case "T":
+                case "T": 
                     return 5;
                 case "R":
-                    return -1; //valor control para saber que gano? jaque
-                default:
+                    form.terminarJuego();
+                    return 0; //valor control para saber que hizo jaque
+                default: 
                     return 1;
             }
         }
@@ -61,23 +67,24 @@ namespace Laboratorio_6
         /// <summary>
         /// Contola los movimientos de los peones
         /// </summary>
-        /// <param name="peon"></param>
-        /// <param name="destino"></param>
-        /// <param name="mov"></param>
+        /// <param name="peon">Botón correspondiente al peón</param>
+        /// <param name="destino">Botón correspondiente a la casilla a la que se quiere mover</param>
+        /// <param name="mov">Número de movimientos que se han hecho en la partida</param>
         public void movimientoPeon(Button peon, Button destino, int mov)
         {
+            Form1 form = new Form1();
             int columna = destino.Location.X;
             int fila = destino.Location.Y;
 
             int colP = peon.Location.X;
             int filaP = peon.Location.Y;
-            string colorPeon = peon.Name.Substring(0,1);
+            string colorPeon = peon.Name.Substring(0, 1);
 
             bool mov1Negro = false;
             bool mov1Blanco = false;
 
             //En el primer movimiento se puede mover hasta 2 casillas
-            if (fila - filaP == 70 && columna == colP || fila - filaP == 140 && columna == colP) 
+            if (fila - filaP == 70 && columna == colP || fila - filaP == 140 && columna == colP)
             {
                 mov1Negro = true;
             }
@@ -100,7 +107,7 @@ namespace Laboratorio_6
                         destino.Image = peon.Image;
                         peon.Image = auxI;
                     }
-                    
+
                 }
                 if (colorPeon == "n")
                 {
@@ -120,12 +127,12 @@ namespace Laboratorio_6
             {
                 bool movNegro = false;
                 bool movBlanco = false;
-                // el peon solo se puede mover hacia adelante en la direccion correspondiente al color
-                if (fila - filaP == 70 && columna == colP)
+                // el peon solo se puede mover hacia adelante en la dirección correspondiente al color
+                if (fila - filaP == 70)
                 {
                     movNegro = true;
                 }
-                if (fila - filaP == -70 && columna == colP)
+                if (fila - filaP == -70)
                 {
                     movBlanco = true;
                 }
@@ -133,7 +140,7 @@ namespace Laboratorio_6
                 string colorVacio = destino.Name.Substring(0, 1);
                 bool comerBlanco = false;
                 bool comerNegro = false;
-                // si la casilla que inidico el jugador esta en diagonal, para comer una pieza
+                // Si la casilla que inidico el jugador esta en diagonal
                 if (fila - filaP == 70 && columna - colP == -70 || fila - filaP == 70 && columna - colP == 70)
                 {
                     comerNegro = true;
@@ -155,9 +162,10 @@ namespace Laboratorio_6
                                 if (comerBlanco && colorVacio != "v")
                                 {
                                     int puntos = sumarPuntos(pieza);
-                                    if (puntos == -1)
+
+                                    if (puntos == 0)
                                     {
-                                        //terminarJuego();
+                                        form.terminarJuego();
                                     }
                                     else
                                     {
@@ -165,7 +173,7 @@ namespace Laboratorio_6
                                     }
 
                                     destino.Image = peon.Image;
-                                    peon.Image = Resources.vacio;
+                                    peon.Image = null;
 
                                     destino.Name = peon.Name;
                                     peon.Name = "v";
@@ -175,17 +183,20 @@ namespace Laboratorio_6
                                 MessageBox.Show("No puedes poner 2 piezas en el mismo lugar");
                                 break;
                             default:
-                                string aux = destino.Name;
-                                destino.Name = peon.Name;
-                                peon.Name = aux;
-                                Image auxI = destino.Image;
-                                destino.Image = peon.Image;
-                                peon.Image = auxI;
+                                if(columna == colP) // para que no se pueda mover en diagonal si no es para comer
+                                {
+                                    string aux = destino.Name;
+                                    destino.Name = peon.Name;
+                                    peon.Name = aux;
+                                    Image auxI = destino.Image;
+                                    destino.Image = peon.Image;
+                                    peon.Image = auxI;
+                                }
                                 break;
                         }
 
                     }
-                    
+
                 }
 
                 if (colorPeon == "n")
@@ -198,9 +209,9 @@ namespace Laboratorio_6
                                 if (comerNegro && colorVacio != "v")
                                 {
                                     int puntos = sumarPuntos(pieza);
-                                    if (puntos == -1)
+                                    if (puntos == 0)
                                     {
-                                        //terminarJuego();
+                                        form.terminarJuego();
                                     }
                                     else
                                     {
@@ -211,45 +222,50 @@ namespace Laboratorio_6
                                     peon.Name = "v";
 
                                     destino.Image = peon.Image;
-                                    peon.Image = Resources.vacio;
+                                    peon.Image = null;
                                 }
                                 break;
                             case "n":
                                 MessageBox.Show("No puedes poner 2 piezas en el mismo lugar");
                                 break;
                             default:
-                                string aux = destino.Name;
-                                destino.Name = peon.Name;
-                                peon.Name = aux;
-                                Image auxI = destino.Image;
-                                destino.Image = peon.Image;
-                                peon.Image = auxI;
+                                if(columna == colP)
+                                {
+                                    string aux = destino.Name;
+                                    destino.Name = peon.Name;
+                                    peon.Name = aux;
+                                    Image auxI = destino.Image;
+                                    destino.Image = peon.Image;
+                                    peon.Image = auxI;
+                                }
                                 break;
                         }
                     }
 
                 }
             }
-            
+
         }
-        
+
         /// <summary>
         /// Controla el movimiento de las torres
         /// </summary>
-        /// <param name="torre"></param>
-        /// <param name="destino"></param>
+        /// <param name="torre">Botón correspondiente a la torre</param>
+        /// <param name="destino">Botón correspondiente a la casilla a la que se quiere mover</param>
         public void movimientoTorre(Button torre, Button destino)
         {
+            Form1 form = new Form1();
             int columna = destino.Location.X;
             int fila = destino.Location.Y;
 
             int colT = torre.Location.X;
             int filaT = torre.Location.Y;
             string colorTorre = torre.Name.Substring(0, 1);
+            form1 = new Form1();
 
             bool movTorre = false;
             //horizontal
-            if(columna - colT <= 490 && columna - colT >= -490 && fila == filaT)
+            if (columna - colT <= 490 && columna - colT >= -490 && fila == filaT)
             {
                 movTorre = true;
             }
@@ -273,9 +289,9 @@ namespace Laboratorio_6
                         if (colorTorre == "b")
                         {
                             int puntos = sumarPuntos(pieza);
-                            if (puntos == -1)
+                            if (puntos == 0)
                             {
-                                //terminarJuego();
+                                form.terminarJuego();
                             }
                             else
                             {
@@ -286,7 +302,7 @@ namespace Laboratorio_6
                             torre.Name = "v";
 
                             destino.Image = torre.Image;
-                            torre.Image = Resources.vacio;
+                            torre.Image = null;
                         }
                         break;
 
@@ -298,9 +314,9 @@ namespace Laboratorio_6
                         if (colorTorre == "n")
                         {
                             int puntos = sumarPuntos(pieza);
-                            if (puntos == -1)
+                            if (puntos == 0)
                             {
-                                //terminarJuego();
+                                form.terminarJuego();
                             }
                             else
                             {
@@ -311,12 +327,11 @@ namespace Laboratorio_6
                             torre.Name = "v";
 
                             destino.Image = torre.Image;
-                            torre.Image = Resources.vacio;
+                            torre.Image = null;
                         }
                         break;
 
                     default:
-
                         string aux = destino.Name;
                         destino.Name = torre.Name;
                         torre.Name = aux;
@@ -324,7 +339,6 @@ namespace Laboratorio_6
                         Image auxI = destino.Image;
                         destino.Image = torre.Image;
                         torre.Image = auxI;
-
                         break;
 
                 }
@@ -335,10 +349,11 @@ namespace Laboratorio_6
         /// <summary>
         /// Controla los movimientos de los caballos
         /// </summary>
-        /// <param name="caballo"></param>
-        /// <param name="destino"></param>
+        /// <param name="caballo">Botón correspondiente al caballo</param>
+        /// <param name="destino">Botón correspondiente a la casilla a la que se quiere mover</param>
         public void movimientoCaballo(Button caballo, Button destino)
         {
+            Form1 form = new Form1();
             int columna = destino.Location.X;
             int fila = destino.Location.Y;
 
@@ -348,7 +363,7 @@ namespace Laboratorio_6
 
             bool movCaballo = false;
             //Adelante
-            if(columna - colC == -70 && fila - filaC ==-140 || columna - colC == 70 && fila - filaC == -140)
+            if (columna - colC == -70 && fila - filaC == -140 || columna - colC == 70 && fila - filaC == -140)
             {
                 movCaballo = true;
             }
@@ -372,7 +387,7 @@ namespace Laboratorio_6
             string pieza = destino.Name.Substring(1);
             if (movCaballo)
             {
-                switch(colorVacio)
+                switch (colorVacio)
                 {
                     case "n":
                         if (colorCaballo == "n")
@@ -382,9 +397,9 @@ namespace Laboratorio_6
                         if (colorCaballo == "b")
                         {
                             int puntos = sumarPuntos(pieza);
-                            if (puntos == -1)
+                            if (puntos == 0)
                             {
-                                //terminarJuego();
+                                form.terminarJuego();
                             }
                             else
                             {
@@ -395,7 +410,7 @@ namespace Laboratorio_6
                             caballo.Name = "v";
 
                             destino.Image = caballo.Image;
-                            caballo.Image = Resources.vacio;
+                            caballo.Image = null;
                         }
                         break;
 
@@ -407,9 +422,9 @@ namespace Laboratorio_6
                         if (colorCaballo == "n")
                         {
                             int puntos = sumarPuntos(pieza);
-                            if (puntos == -1)
+                            if (puntos == 0)
                             {
-                                //terminarJuego();
+                                form.terminarJuego();
                             }
                             else
                             {
@@ -420,12 +435,11 @@ namespace Laboratorio_6
                             caballo.Name = "v";
 
                             destino.Image = caballo.Image;
-                            caballo.Image = Resources.vacio;
+                            caballo.Image = null;
                         }
                         break;
 
                     default:
-
                         string aux = destino.Name;
                         destino.Name = caballo.Name;
                         caballo.Name = aux;
@@ -433,7 +447,6 @@ namespace Laboratorio_6
                         Image auxI = destino.Image;
                         destino.Image = caballo.Image;
                         caballo.Image = auxI;
-
                         break;
 
                 }
@@ -442,12 +455,122 @@ namespace Laboratorio_6
         }
 
         /// <summary>
+        /// Controla el movimiento de los alfiles
+        /// </summary>
+        /// <param name="alfil">Botón correspondiente al alfil</param>
+        /// <param name="destino">Botón correspondiente a la casilla a la que se quiere mover</param>
+        public void movimientoAlfil(Button alfil, Button destino)
+        {
+            Form1 form = new Form1();
+            int columna = destino.Location.X;
+            int fila = destino.Location.Y;
+            int colA = alfil.Location.X;
+            int filaA = alfil.Location.Y;
+
+            bool movAlfil = false;
+            //Arriba derecha
+            if (fila - filaA >= -490 && columna - colA == -(fila - filaA))
+            {
+                movAlfil = true;
+            }
+            //Abajo derecha
+            if (fila - filaA >= 490 && columna - colA == fila - filaA)
+            {
+                movAlfil = true;
+            }
+            //Arriba izquierda
+            if (fila - filaA >= -490 && columna - colA == fila - filaA)
+            {
+                movAlfil = true;
+            }
+            //Abajo izquierda
+            if (fila - filaA >= 490 && columna - colA == -(fila - filaA))
+            {
+                movAlfil = true;
+            }
+
+            string colorAlfil = alfil.Name.Substring(0, 1);
+            string colorVacio = destino.Name.Substring(0, 1);
+            string pieza = destino.Name.Substring(1);
+
+            if (movAlfil)
+            {
+                switch (colorVacio)
+                {
+                    case "n":
+                        if (colorAlfil == "n")
+                        {
+                            MessageBox.Show("No puedes poner 2 piezas en el mismo lugar");
+                        }
+                        if (colorAlfil == "b")
+                        {
+                            int puntos = sumarPuntos(pieza);
+                            if (puntos == 0)
+                            {
+                                form.terminarJuego();
+                            }
+                            else
+                            {
+                                puntosBlancas += puntos;
+                            }
+
+                            destino.Name = alfil.Name;
+                            alfil.Name = "v";
+
+                            destino.Image = alfil.Image;
+                            alfil.Image = null;
+                        }
+                        break;
+
+                    case "b":
+                        if (colorAlfil == "b")
+                        {
+                            MessageBox.Show("No puedes poner 2 piezas en el mismo lugar");
+                        }
+                        if (colorAlfil == "n")
+                        {
+                            int puntos = sumarPuntos(pieza);
+                            if (puntos == 0)
+                            {
+                                form.terminarJuego();
+                            }
+                            else
+                            {
+                                puntosNegras += puntos;
+                            }
+
+                            destino.Name = alfil.Name;
+                            alfil.Name = "v";
+
+                            destino.Image = alfil.Image;
+                            alfil.Image = null;
+                        }
+                        break;
+
+                    default:
+
+                        string aux = destino.Name;
+                        destino.Name = alfil.Name;
+                        alfil.Name = aux;
+
+                        Image auxI = destino.Image;
+                        destino.Image = alfil.Image;
+                        alfil.Image = auxI;
+
+                        break;
+                }
+            }
+
+        }
+
+        /// <summary>
         ///  Controla los movimientos de los reyes
         /// </summary>
-        /// <param name="rey"></param>
-        /// <param name="destino"></param>
+        /// <param name="rey">Botón correspondiente a la rey</param>
+        /// <param name="destino">Botón correspondiente a la casilla que se quiere mover</param>
         public void movimientoRey(Button rey, Button destino)
         {
+            Form1 form = new Form1();
             int columna = destino.Location.X;
             int fila = destino.Location.Y;
 
@@ -455,7 +578,7 @@ namespace Laboratorio_6
             int filaR = rey.Location.Y;
 
             bool horizontal = false;
-            bool vertical = false; 
+            bool vertical = false;
 
             if (filaR - fila == 70 && colR == columna || filaR - fila == -70 && colR == columna)
             {
@@ -468,7 +591,7 @@ namespace Laboratorio_6
 
             bool diagonal = false;
 
-            if (filaR - fila == 70 && colR - columna == 70 || filaR - fila == 70 && colR - columna == -70 || 
+            if (filaR - fila == 70 && colR - columna == 70 || filaR - fila == 70 && colR - columna == -70 ||
                 filaR - fila == -70 && colR - columna == 70 || filaR - fila == -70 && colR - columna == -70)
             {
                 diagonal = true;
@@ -490,9 +613,9 @@ namespace Laboratorio_6
                         if (colorRey == "b")
                         {
                             int puntos = sumarPuntos(pieza);
-                            if (puntos == -1)
+                            if (puntos == 0)
                             {
-                                //terminarJuego();
+                                form.terminarJuego();
                             }
                             else
                             {
@@ -503,7 +626,7 @@ namespace Laboratorio_6
                             rey.Name = "v";
 
                             destino.Image = rey.Image;
-                            rey.Image = Resources.vacio;
+                            rey.Image = null;
                         }
                         break;
 
@@ -515,9 +638,9 @@ namespace Laboratorio_6
                         if (colorRey == "n")
                         {
                             int puntos = sumarPuntos(pieza);
-                            if (puntos == -1)
+                            if (puntos == 0)
                             {
-                                //terminarJuego();
+                                form.terminarJuego();
                             }
                             else
                             {
@@ -528,12 +651,11 @@ namespace Laboratorio_6
                             rey.Name = "v";
 
                             destino.Image = rey.Image;
-                            rey.Image = Resources.vacio;
+                            rey.Image = null;
                         }
                         break;
 
                     default:
-
                         string aux = destino.Name;
                         destino.Name = rey.Name;
                         rey.Name = aux;
@@ -541,15 +663,129 @@ namespace Laboratorio_6
                         Image auxI = destino.Image;
                         destino.Image = rey.Image;
                         rey.Image = auxI;
-
                         break;
                 }
-               
+
             }
 
         }
 
-        
+        /// <summary>
+        /// Controla el movimiento de las reinas
+        /// </summary>
+        /// <param name="reina">Botón correspondiente a la reina</param>
+        /// <param name="destino">Botón correspondiente a la casilla a la que se quiere mover</param>
+        public void movimientoReina(Button reina, Button destino)
+        {
+            Form1 form = new Form1();
+            int columna = destino.Location.X;
+            int fila = destino.Location.Y;
+
+            int colR = reina.Location.X;
+            int filaR = reina.Location.Y;
+
+            bool movReina = false;
+            //Arriba derecha
+            if (fila - filaR >= -490 && columna - colR == -(fila - filaR))
+            {
+                movReina = true;
+            }
+            //Abajo derecha
+            if (fila - filaR >= 490 && columna - colR == fila - filaR)
+            {
+                movReina = true;
+            }
+            //Arriba izquierda
+            if (fila - filaR >= -490 && columna - colR == fila - filaR)
+            {
+                movReina = true;
+            }
+            //Abajo izquierda
+            if (fila - filaR >= 490 && columna - colR == -(fila - filaR))
+            {
+                movReina = true;
+            }
+            //horizontal
+            if (columna - colR <= 490 && columna - colR >= -490 && fila == filaR)
+            {
+                movReina = true;
+            }
+            //vertical
+            if (fila - filaR <= 490 && fila - filaR >= -490 && columna == colR)
+            {
+                movReina = true;
+            }
+
+            string colorReina = reina.Name.Substring(0, 1);
+            string colorVacio = destino.Name.Substring(0, 1);
+            string pieza = destino.Name.Substring(1);
+
+            if (movReina)
+            {
+                switch (colorVacio)
+                {
+                    case "n":
+                        if (colorReina == "n")
+                        {
+                            MessageBox.Show("No puedes poner 2 piezas en el mismo lugar");
+                        }
+                        if (colorReina == "b")
+                        {
+                            int puntos = sumarPuntos(pieza);
+                            if (puntos == 0)
+                            {
+                                form.terminarJuego();
+                            }
+                            else
+                            {
+                                puntosBlancas += puntos;
+                            }
+
+                            destino.Name = reina.Name;
+                            reina.Name = "v";
+
+                            destino.Image = reina.Image;
+                            reina.Image = null;
+                        }
+                        break;
+
+                    case "b":
+                        if (colorReina == "b")
+                        {
+                            MessageBox.Show("No puedes poner 2 piezas en el mismo lugar");
+                        }
+                        if (colorReina == "n")
+                        {
+                            int puntos = sumarPuntos(pieza);
+                            if (puntos == 0)
+                            {
+                                form.terminarJuego();
+                            }
+                            else
+                            {
+                                puntosNegras += puntos;
+                            }
+
+                            destino.Name = reina.Name;
+                            reina.Name = "v";
+
+                            destino.Image = reina.Image;
+                            reina.Image = null;
+                        }
+                        break;
+
+                    default:
+                        string aux = destino.Name;
+                        destino.Name = reina.Name;
+                        reina.Name = aux;
+
+                        Image auxI = destino.Image;
+                        destino.Image = reina.Image;
+                        reina.Image = auxI;
+                        break;
+                }
+            }
+        }
 
         /// <summary>
         /// Le asigna la posicion correspondiente a un tablero real a cada espacio de la matriz.
@@ -588,7 +824,7 @@ namespace Laboratorio_6
                         case 7:
                             fila = 1;
                             break;
-                        default: 
+                        default:
                             break;
                     }
 
@@ -618,7 +854,7 @@ namespace Laboratorio_6
                         case 7:
                             posiciones[f, c] = fila.ToString() + "h";
                             break;
-                        default: 
+                        default:
                             break;
                     }
                 }
@@ -627,27 +863,28 @@ namespace Laboratorio_6
         }
 
         /// <summary>
-        /// Asigna las imagen de las pieza correspondiente a cada espacio del tablero
+        /// Asigna las imagenes a los botones.
         /// </summary>
         /// <param name="fila">Fila en la que se encuentra el boton al que se le quiere asignar imagen</param>
         /// <param name="columna">Columna en la que se encuentra el boton al que se le quiere asignar imagen</param>
-        /// <returns></returns>
+        /// <returns>La imagen correspondiente a la posicion del boton</returns>
         public Image asignarPiezas(int fila, int columna)
         {
             string posicion = posiciones[fila,columna];
 
             switch (posicion)
             {
+                //negras
                 case "8a":
-                    return Resources.nT;
+                    return Resources.nT; 
                 case "8b":
-                    return Resources.nC;
+                    return Resources.nC; 
                 case "8c":
-                    return Resources.nA;
+                    return Resources.nA; 
                 case "8d":
-                    return Resources.nQ;
+                    return Resources.nQ; 
                 case "8e":
-                    return Resources.nR;
+                    return Resources.nR; 
                 case "8f":
                     return Resources.nA;
                 case "8g":
@@ -655,7 +892,7 @@ namespace Laboratorio_6
                 case "8h":
                     return Resources.nT;
 
-                case "7a":
+                case "7a":                //Fila peones negros
                     return Resources.nP;
                 case "7b":
                     return Resources.nP;
@@ -671,17 +908,17 @@ namespace Laboratorio_6
                     return Resources.nP;
                 case "7h":
                     return Resources.nP;
-
+                //blancas
                 case "1a":
-                    return Resources.bT;
+                    return Resources.bT; 
                 case "1b":
-                    return Resources.bC;
+                    return Resources.bC; 
                 case "1c":
-                    return Resources.bA;
+                    return Resources.bA;  
                 case "1d":
-                    return Resources.bQ;
+                    return Resources.bQ; 
                 case "1e":
-                    return Resources.bR;
+                    return Resources.bR;  
                 case "1f":
                     return Resources.bA;
                 case "1g":
@@ -690,7 +927,7 @@ namespace Laboratorio_6
                     return Resources.bT;
 
                 case "2a":
-                    return Resources.bP;
+                    return Resources.bP; //fila de peones blancos
                 case "2b":
                     return Resources.bP;
                 case "2c":
@@ -706,12 +943,20 @@ namespace Laboratorio_6
                 case "2h":
                     return Resources.bP;
                 default:
-                    return Resources.vacio;
+                    return null;
 
             }
 
         }
 
+        /// <summary>
+        /// Le asigna el nombre a los botones.
+        /// La primera letra corresponde al color "n" negra o "b" blanca y la segunda al tipo de pieza: P-Peones, C-Caballos, A-Alfiles,
+        /// T-Torres, Q-Reina y R-Rey.
+        /// </summary>
+        /// <param name="fila">Fila en la que se encuentra el boton</param>
+        /// <param name="columna">Columna en la que se encuenra el boton</param>
+        /// <returns>Nombre correspondiente a la posicion en la que se encuentra, en el orden inicial</returns>
         public string nombreBoton(int fila, int columna)
         {
             string posicion = posiciones[fila, columna];
@@ -791,9 +1036,6 @@ namespace Laboratorio_6
             }
 
         }
-
-
-
 
     }
 }
