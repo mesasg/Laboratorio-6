@@ -261,7 +261,6 @@ namespace Laboratorio_6
             int colT = torre.Location.X;
             int filaT = torre.Location.Y;
             string colorTorre = torre.Name.Substring(0, 1);
-            form1 = new Form1();
 
             bool movTorre = false;
             //horizontal
